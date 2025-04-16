@@ -1,0 +1,4 @@
+node_modules
+capstone-api.pem
+src/uploads/*
+!src/uploads/.gitkeep
