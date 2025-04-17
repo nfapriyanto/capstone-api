@@ -8,6 +8,11 @@ const {
     createArticleHandler,
     updateArticleHandler,
     deleteArticleHandler,
+    adminLoginHandler,
+    getSlidersHandler,
+    getSliderByIdHandler,
+    getArticlesHandler,
+    getArticleByIdHandler,
 } = require("./handler");
 
 const routes = [
@@ -26,23 +31,51 @@ const routes = [
         path: "/login",
         handler: loginHandler,
     },
+    // Public routes for sliders
+    {
+        method: "GET",
+        path: "/sliders",
+        handler: getSlidersHandler,
+    },
+    {
+        method: "GET",
+        path: "/sliders/{id}",
+        handler: getSliderByIdHandler,
+    },
+    // Public routes for articles
+    {
+        method: "GET",
+        path: "/articles",
+        handler: getArticlesHandler,
+    },
+    {
+        method: "GET",
+        path: "/articles/{id}",
+        handler: getArticleByIdHandler,
+    },
+    // Admin routes
     {
         method: "POST",
-        path: "/sliders",
+        path: "/admin",
+        handler: adminLoginHandler,
+    },
+    {
+        method: "POST",
+        path: "/admin/sliders",
         options: {
             payload: {
                 allow: ['multipart/form-data'],
                 multipart: {
                     output: 'stream'
                 },
-                maxBytes: 1000000 // 1MB
+                maxBytes: 1000000
             }
         },
         handler: createSliderHandler,
     },
     {
         method: "PUT",
-        path: "/sliders/{id}",
+        path: "/admin/sliders/{id}",
         options: {
             payload: {
                 allow: ['multipart/form-data'],
@@ -56,12 +89,12 @@ const routes = [
     },
     {
         method: "DELETE",
-        path: "/sliders/{id}",
+        path: "/admin/sliders/{id}",
         handler: deleteSliderHandler,
     },
     {
         method: "POST",
-        path: "/articles",
+        path: "/admin/articles",
         options: {
             payload: {
                 allow: ['multipart/form-data'],
@@ -75,7 +108,7 @@ const routes = [
     },
     {
         method: "PUT",
-        path: "/articles/{id}",
+        path: "/admin/articles/{id}",
         options: {
             payload: {
                 allow: ['multipart/form-data'],
@@ -89,7 +122,7 @@ const routes = [
     },
     {
         method: "DELETE",
-        path: "/articles/{id}",
+        path: "/admin/articles/{id}",
         handler: deleteArticleHandler,
     },
     {

@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const users = require("./users");
 const sliders = require("./sliders");
 const articles = require("./articles");
+const admins = require("./admins");
 const { JWT_SECRET } = require('./config');
 const fs = require('fs');
 const path = require('path');
@@ -168,11 +169,21 @@ const verifyToken = (request) => {
 };
 
 const verifyAdmin = (request) => {
-    const decoded = verifyToken(request);
-    if (decoded.role !== 'admin') {
-        throw new Error('Akses ditolak. Hanya admin yang diizinkan.');
+    const authHeader = request.headers.authorization;
+    if (!authHeader) {
+        throw new Error('Token tidak ditemukan');
     }
-    return decoded;
+
+    const token = authHeader.split(' ')[1];
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        if (!decoded.adminId) {
+            throw new Error('Akses ditolak');
+        }
+        return decoded;
+    } catch (error) {
+        throw new Error('Token tidak valid');
+    }
 };
 
 // Handler untuk Home
@@ -496,6 +507,103 @@ const deleteArticleHandler = async (request, h) => {
     }
 };
 
+const adminLoginHandler = async (request, h) => {
+    const { email, password } = request.payload;
+
+    // Cari admin berdasarkan email
+    const admin = admins.filter((a) => a.email === email)[0];
+
+    if (!admin) {
+        const response = h.response({
+            error: true,
+            message: "Email atau password salah",
+        });
+        response.code(401);
+        return response;
+    }
+
+    // Verifikasi password
+    const isPasswordValid = await bcrypt.compare(password, admin.password);
+
+    if (!isPasswordValid) {
+        const response = h.response({
+            error: true,
+            message: "Email atau password salah",
+        });
+        response.code(401);
+        return response;
+    }
+
+    // Generate JWT token
+    const token = jwt.sign({ 
+        adminId: admin.id
+    }, JWT_SECRET);
+
+    const response = h.response({
+        error: false,
+        message: "success",
+        loginResult: {
+            adminId: admin.id,
+            name: admin.name,
+            token: token
+        }
+    });
+    response.code(200);
+    return response;
+};
+
+const getSlidersHandler = async (request, h) => {
+    return h.response({
+        error: false,
+        message: 'success',
+        data: sliders
+    }).code(200);
+};
+
+const getSliderByIdHandler = async (request, h) => {
+    const { id } = request.params;
+    const slider = sliders.find((s) => s.id === id);
+
+    if (!slider) {
+        return h.response({
+            error: true,
+            message: 'Slider tidak ditemukan'
+        }).code(404);
+    }
+
+    return h.response({
+        error: false,
+        message: 'success',
+        data: slider
+    }).code(200);
+};
+
+const getArticlesHandler = async (request, h) => {
+    return h.response({
+        error: false,
+        message: 'success',
+        data: articles
+    }).code(200);
+};
+
+const getArticleByIdHandler = async (request, h) => {
+    const { id } = request.params;
+    const article = articles.find((a) => a.id === id);
+
+    if (!article) {
+        return h.response({
+            error: true,
+            message: 'Artikel tidak ditemukan'
+        }).code(404);
+    }
+
+    return h.response({
+        error: false,
+        message: 'success',
+        data: article
+    }).code(200);
+};
+
 module.exports = {
     registerHandler,
     loginHandler,
@@ -506,4 +614,9 @@ module.exports = {
     createArticleHandler,
     updateArticleHandler,
     deleteArticleHandler,
+    adminLoginHandler,
+    getSlidersHandler,
+    getSliderByIdHandler,
+    getArticlesHandler,
+    getArticleByIdHandler,
 };
