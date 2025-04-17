@@ -14,6 +14,7 @@ const {
     getArticlesHandler,
     getArticleByIdHandler,
 } = require("./handler");
+const Path = require('path');
 
 const routes = [
     {
@@ -130,7 +131,9 @@ const routes = [
         path: '/uploads/{param*}',
         handler: {
             directory: {
-                path: './src/uploads'
+                path: Path.join(__dirname, 'uploads'),
+                listing: false,
+                index: false
             }
         }
     }

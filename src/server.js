@@ -31,8 +31,8 @@ const clearUploadsFolder = () => {
 };
 
 const init = async () => {
-    // Bersihkan folder uploads saat server mulai
-    clearUploadsFolder();
+    // Comment out the line below to prevent clearing uploads folder on server start
+    // clearUploadsFolder();
 
     const server = Hapi.server({
         port: 5000,
@@ -42,7 +42,7 @@ const init = async () => {
                 origin: ["*"],
             },
             files: {
-                relativeTo: Path.join(__dirname, 'uploads')
+                relativeTo: Path.join(__dirname) // Ubah ini
             }
         },
     });
