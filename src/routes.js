@@ -69,7 +69,7 @@ const routes = [
                 multipart: {
                     output: 'stream'
                 },
-                maxBytes: 1000000
+                maxBytes: 2000000
             }
         },
         handler: createSliderHandler,
@@ -83,7 +83,7 @@ const routes = [
                 multipart: {
                     output: 'stream'
                 },
-                maxBytes: 1000000
+                maxBytes: 2000000
             }
         },
         handler: updateSliderHandler,
@@ -102,7 +102,7 @@ const routes = [
                 multipart: {
                     output: 'stream'
                 },
-                maxBytes: 1000000
+                maxBytes: 2000000
             }
         },
         handler: createArticleHandler,
@@ -116,7 +116,7 @@ const routes = [
                 multipart: {
                     output: 'stream'
                 },
-                maxBytes: 1000000
+                maxBytes: 2000000
             }
         },
         handler: updateArticleHandler,
